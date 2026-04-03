@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Essie the Cat - Interactive Story</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div class="game-card">
+    <div class="speech-bubble" id="dialogue">Hello! My name is Essie!🐾</div>
+    
+    <div class="item-display" id="item-spot"></div>
+
+    <div class="Essie-container happy" id="Essie">
+        <div class="face">
+            <div class="eye"></div>
+            <div class="eye"></div>
+        </div>
+        <div class="blush left"></div>
+        <div class="blush right"></div>
+        <div class="paw left" id="pawL"></div>
+        <div class="paw right" id="pawR"></div>
+    </div>
+
+    <div class="btn-group" id="btn-container">
+        <button onclick="nextStep('start')">Nice to meet you!</button>
+    </div>
+</div>
+
+<script>
+    const dialogue = document.getElementById('dialogue');
+    const btnContainer = document.getElementById('btn-container');
+    const itemSpot = document.getElementById('item-spot');
+    const Essie = document.getElementById('Essie');
+    const pawL = document.getElementById('pawL');
+    const pawR = document.getElementById('pawR');
+
+    // Audio Setup
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function beep(freq) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
+        
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+        
+        // Visual Paw Hit
+        const paw = freq < 250 ? pawL : pawR;
+        paw.classList.add('hit');
+        setTimeout(() => paw.classList.remove('hit'), 100);
+    }
+
+    // Helper to change Essie's expression class
+    function setExpression(expr) {
+        Essie.className = 'Essie-container ' + expr;
+    }
+
+    function setButtons(opts) {
+        btnContainer.innerHTML = '';
+        opts.forEach(opt => {
+            const b = document.createElement('button');
+            b.innerText = opt.text;
+            b.onclick = () => {
+                beep(opt.sound || 200);
+                nextStep(opt.target);
+            };
+            btnContainer.appendChild(b);
+        });
+    }
+
+    function nextStep(step) {
+        // Default expression is happy (blush on)
+        setExpression('happy');
+
+        switch(step) {
+            case 'start':
+                dialogue.innerText = "Nice to meet you! Pat me? (Click Buttons)";
+                setButtons([{text: "Pat Essie", target: 'veggies', sound: 300}]);
+                break;
+
+            case 'veggies':
+                dialogue.innerText = "Do you want veggies?";
+                setButtons([
+                    {text: "Yes", target: 'veg_yes', sound: 300},
+                    {text: "No", target: 'veg_no', sound: 150}
+                ]);
+                break;
+
+            case 'veg_yes':
+                dialogue.innerText = "Good! You're a healthy human! 🥦";
+                setTimeout(() => nextStep('milk_ask'), 2000);
+                break;
+
+            case 'veg_no':
+                dialogue.innerText = "Good! You're saving animal food! 🥕";
+                setTimeout(() => nextStep('milk_ask'), 2000);
+                break;
+
+            case 'milk_ask':
+                dialogue.innerText = "Can you hand me my milk? 🥛";
+                setButtons([
+                    {text: "Yes", target: 'milk_yes', sound: 300},
+                    {text: "No", target: 'milk_no', sound: 100}
+                ]);
+                break;
+
+            case 'milk_yes':
+                itemSpot.innerText = "🥛";
+                setExpression('surprised happy'); // Wide eyes + blush
+                dialogue.innerText = "Thank you! You're the kindest man! ✨";
+                setTimeout(() => { itemSpot.innerText = ""; nextStep('comment_ask'); }, 2500);
+                break;
+
+            case 'milk_no':
+                setExpression('angry'); // Narrow eyes, no blush
+                dialogue.innerText = "You're so cruel! Worse than Hitler! 🙀";
+                setTimeout(() => nextStep('water_ask'), 2500);
+                break;
+
+            case 'water_ask':
+                dialogue.innerText = "At least hand me water... 💧";
+                setButtons([
+                    {text: "Give Water", target: 'water_yes', sound: 250},
+                    {text: "Refuse", target: 'water_no', sound: 100}
+                ]);
+                break;
+
+            case 'water_yes':
+                itemSpot.innerText = "💧";
+                setExpression('surprised happy');
+                dialogue.innerText = "Thank you for the water! You get success soon! 🌊";
+                setTimeout(() => { itemSpot.innerText = ""; nextStep('comment_ask'); }, 2500);
+                break;
+
+            case 'water_no':
+                setExpression('angry');
+                dialogue.innerText = "What's wrong with you! Just hand it to me! 😤";
+                setTimeout(() => nextStep('comment_ask'), 2500);
+                break;
+
+            case 'comment_ask':
+                dialogue.innerText = "Do you want to comment bad on code?";
+                setButtons([
+                    {text: "Yes, I'll be mean", target: 'bad_yes', sound: 100},
+                    {text: "No, never!", target: 'bad_no', sound: 400}
+                ]);
+                break;
+
+            case 'bad_yes':
+                setExpression('angry');
+                dialogue.innerText = "Go ahead. I'll haunt every code and make you uncomfortable! 👻";
+                setTimeout(() => nextStep('gender_ask'), 3000);
+                break;
+
+            case 'bad_no':
+                dialogue.innerText = "Good good! You will live long and healthy! ❤️";
+                setTimeout(() => nextStep('gender_ask'), 2500);
+                break;
+
+            case 'gender_ask':
+                setExpression('surprised'); // Just curious
+                dialogue.innerText = "Are you male or female?";
+                setButtons([
+                    {text: "Male", target: 'male_end', sound: 200},
+                    {text: "Female", target: 'female_end', sound: 450}
+                ]);
+                break;
+
+            case 'male_end':
+                setExpression('angry');
+                dialogue.innerText = "Ehhh... all this time I was talking to you? Whatever. 👋";
+                setButtons([{text: "Play Again", target: 'start'}]);
+                break;
+
+            case 'female_end':
+                setExpression('surprised happy');
+                dialogue.innerText = "In case no one told you... you're so cute! i love youu 💗✨";
+                setButtons([{text: "Play Again", target: 'start'}]);
+                break;
+        }
+    }
+</script>
+
+</body>
+</html>

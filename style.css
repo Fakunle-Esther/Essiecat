@@ -1,0 +1,206 @@
+body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: var(--Essie-pink);
+            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+            overflow: hidden;
+            user-select: none;
+        }
+        :root {
+            --Essie-pink: #ffdae9;
+            --Essie-dark: #3a3a3a; /* Slightly softer dark */
+            --Essie-accent: #ff85a1;
+            --Essie-blush: rgba(255, 182, 193, 0.7);}
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 40px;
+            border: 4px solid white;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 350px;
+        }
+
+        /* Speech Bubble */
+        .speech-bubble {
+            background: white;
+            border: 3px solid var(--Essie-dark);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 20px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--Esther-dark);
+            position: relative;
+        }
+        
+        /* The tail of the speech bubble */
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 15px 15px 0;
+            border-style: solid;
+            border-color: white transparent transparent transparent;
+            z-index: 1;
+        }
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -19px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 16px 16px 0;
+            border-style: solid;
+            border-color: var(--Essie-dark) transparent transparent transparent;
+            z-index: 0;
+        }
+
+        .item-display { font-size: 3rem; margin: 10px; height: 50px; }
+
+        /* --- ESSIE'S BODY & FACE --- */
+        .Essie-container {
+            position: relative;
+            width: 200px;
+            height: 140px;
+            background: white;
+            border: 4px solid var(--Essie-dark);
+            border-radius: 100px 100px 20px 20px;
+            margin: 0 auto 40px auto;
+            transition: transform 0.2s, background-color 0.3s;
+        }
+
+        /* Ears */
+        .Essie-container::before, .Essie-container::after {
+            content: ''; position: absolute; top: -18px;
+            width: 0; height: 0;
+            border-left: 22px solid transparent;
+            border-right: 22px solid transparent;
+            border-bottom: 35px solid var(--Essie-dark);
+            z-index: -1;
+        }
+        .Essie-container::before { left: 20px; transform: rotate(-10deg); }
+        .Essie-container::after { right: 20px; transform: rotate(10deg); }
+
+        /* THE EYES (The new adorable part) */
+        .face {
+            position: absolute;
+            top: 45px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 35px;
+        }
+
+        .eye {
+            position: relative;
+            width: 30px;
+            height: 35px;
+            background-color: var(--Essie-dark);
+            border-radius: 50%;
+            overflow: hidden;
+            transition: height 0.1s;
+        }
+
+        /* Pupil sparkle */
+        .eye::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        /* Blinking animation */
+        @keyframes blink {
+            0%, 90%, 100% { transform: scaleY(1); }
+            95% { transform: scaleY(0.1); }
+        }
+
+        .Essie-container:not(.surprised) .eye {
+            animation: blink 4s infinite;
+        }
+
+        /* Expression States */
+        .surprised .eye {
+            height: 40px;
+            width: 35px;
+            animation: none;
+        }
+
+        .angry .eye {
+            height: 15px;
+            margin-top: 10px;
+            animation: none;
+        }
+
+        /* Blush Cheeks */
+        .blush {
+            position: absolute;
+            top: 75px;
+            width: 25px;
+            height: 15px;
+            background: var(--Essie-blush);
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .blush.left { left: 35px; }
+        .blush.right { right: 35px; }
+
+        /* Happy state shows blush */
+        .happy .blush { opacity: 1; }
+
+        /* Paws */
+        .paw {
+            position: absolute; bottom: -10px;
+            width: 45px; height: 60px;
+            background: white; border: 4px solid var(--Essie-dark);
+            border-radius: 20px; transition: transform 0.1s ease-out;
+            z-index: 2;
+        }
+        .paw.left { left: 20px; transform: rotate(20deg); }
+        .paw.right { right: 20px; transform: rotate(-20deg); }
+        .paw.hit { transform: translateY(30px) rotate(0deg); 
+            
+        }
+
+        /* --- BUTTONS --- */
+        .btn-group { 
+            display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 15px;
+            background: var(--Essie-accent);
+            color: white;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #d64d6d;
+            transition: all 0.1s;
+        }
+
+        button:active { 
+            transform: translateY(3px); box-shadow: 0 1px 0 #d64d6d;
+            }
+        button:hover {
+            background-color: #ff6b8e; 
+        }
